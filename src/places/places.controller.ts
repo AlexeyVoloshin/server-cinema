@@ -2,23 +2,25 @@ import { Body, Controller, Get, Post, Put, Param } from '@nestjs/common';
 import { PlaceInterface } from '../interfaces/place.interface';
 import { PlacesService } from './places.service';
 import { CreatePlaceDto } from '../dto/create-place.dto';
-import { UpdatePlaceDto } from '../dto/update-place.dto';
 
 @Controller('places')
 export class PlacesController {
   constructor(private readonly placesService: PlacesService) {
   }
   @Get()
-  async findAll(): Promise<PlaceInterface[]> {
-    return this.placesService.getTweets();
+  async gelAllPlaces(): Promise<PlaceInterface[]> {
+    return this.placesService.getPlaces();
+  }
+  @Get(':id')
+  async getPlace(@Param('id') placeId: string): Promise<PlaceInterface> {
+    return this.placesService.getSinglePlace(placeId);
   }
   @Post()
-  async create(@Body() createPlaceDto: CreatePlaceDto) {
-    await this.placesService.create(createPlaceDto);
+  async createMany(@Body() createPlaceDto: CreatePlaceDto[]) {
+    await this.placesService.createPlace(createPlaceDto);
   }
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updatePlaceDto: UpdatePlaceDto) {
-    await this.placesService.update(updatePlaceDto);
+  async update(@Param('id') id: string, @Body() place: string) {
+    await this.placesService.updatePlace(id, place);
   }
-
 }

@@ -3,7 +3,7 @@ import {
   OnGatewayDisconnect,
   OnGatewayInit,
   SubscribeMessage,
-  WebSocketGateway,
+  WebSocketGateway, WebSocketServer,
   WsResponse,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
@@ -11,7 +11,7 @@ import { Socket, Server } from 'socket.io';
 
 @WebSocketGateway()
 export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
-
+@WebSocketServer() server;
   private logger: Logger = new Logger('AppGateway');
 
   afterInit(server: Server) {
@@ -22,6 +22,9 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     this.logger.log(`Client disconnected: ${client.id}`);
   }
   handleConnection(client: Socket, ...args: any[]) {
+    this.server.emit('place', (data) => {
+      return data + 'dfgdfg';
+    } );
     this.logger.log(`Client connected: ${client.id}`);
   }
   @SubscribeMessage('msgToServer')
