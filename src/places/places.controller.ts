@@ -8,7 +8,7 @@ export class PlacesController {
   constructor(private readonly placesService: PlacesService) {
   }
   @Get()
-  async gelAllPlaces(): Promise<PlaceInterface[]> {
+  async getAllPlaces(): Promise<PlaceInterface[]> {
     return this.placesService.getPlaces();
   }
   @Get(':id')

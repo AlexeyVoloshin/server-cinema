@@ -6,6 +6,8 @@ import { CreatePlaceDto } from '../dto/create-place.dto';
 @Injectable()
 export class PlacesService {
   private logger: Logger = new Logger('PlacesService');
+  places: CreatePlaceDto[] = [];
+  // select: PlaceInterface[] = [];
   constructor(@Inject('PLACE_MODEL') private readonly placeModel: Model<PlaceInterface>) {
   }
   async createPlace(createPlace: CreatePlaceDto[]): Promise<PlaceInterface> {
@@ -19,7 +21,13 @@ export class PlacesService {
   }
   async getPlaces(): Promise<PlaceInterface[]> { // get place from local db
     try {
-      return await this.placeModel.find().exec();
+      let result;
+      result = await this.placeModel.find().exec();
+    if (result.length === 0) {
+      await this.createNewPlaces();
+      result = await this.placeModel.find().exec();
+    }
+    return result;
     } catch (err) {
       this.logger.log('getPlace error: ', err);
     }
@@ -55,5 +63,18 @@ export class PlacesService {
       throw new NotFoundException('Could not find place.');
     }
     return place;
+  }
+  async createNewPlaces() {
+    for ( let r = 1; r < 11; r++) {
+      for ( let p = 1; p < 11; p++) {
+        this.places.push({
+          row : r,
+          place : p,
+          select : false,
+          bought : false,
+        });
+      }
+    }
+    await this.createPlace(this.places);
   }
 }

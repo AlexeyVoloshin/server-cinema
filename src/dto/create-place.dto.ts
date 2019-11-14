@@ -1,5 +1,6 @@
 export class CreatePlaceDto {
-  readonly row: string;
-  readonly place: string;
+  readonly row: number;
+  readonly place: number;
   readonly select: boolean;
+  readonly bought: boolean;
 }
