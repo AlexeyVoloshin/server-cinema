@@ -13,7 +13,7 @@ import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PlaceInterface } from './interfaces/place.interface';
 import { PlacesService } from './places/places.service';
-import { CreatePlaceDto } from './dto/create-place.dto';
+import { Place } from './dto/place';
 
 @WebSocketGateway()
 // export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -23,12 +23,11 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
  @WebSocketServer()
  server: Server;
 
-   places: CreatePlaceDto[] = [];
+   places: Place[];
 
    private logger: Logger = new Logger('AppGateway');
 
  async afterInit(server: Server) {
-    // debugger;
     await this.placesService.getPlaces().then(data => {
       this.places = data;
     });
@@ -58,14 +57,18 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   // }
 
   @SubscribeMessage('save')
-  sendSelected(@MessageBody() data: PlaceInterface[]) {
-    // debugger
-    //  this.selected = data;
-    //  return this.selected;
+  sendSelected(@MessageBody() id: string) {
+    this.logger.log(`work`, id);
+    for (let val of this.places) {
+     if (val['_doc']._id === id) {
+       val['_doc'].select = true;
+       return ;
+     }
+   }
   }
 
   @SubscribeMessage('get')
-  async  getSelected(): Promise<CreatePlaceDto[]> {
+  async  getSelected(): Promise<Place[]> {
     // this.selected;
      return  this.places;
   }

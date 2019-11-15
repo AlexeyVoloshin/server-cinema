@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { PlaceInterface } from '../interfaces/place.interface';
 import { CreatePlaceDto } from '../dto/create-place.dto';
+import { Place } from '../dto/place';
 
 @Injectable()
 export class PlacesService {
@@ -19,7 +20,7 @@ export class PlacesService {
       this.logger.log('create place error: ', err);
     }
   }
-  async getPlaces(): Promise<PlaceInterface[]> { // get place from local db
+  async getPlaces(): Promise<Place[]> { // get place from local db
     try {
       let result;
       result = await this.placeModel.find().exec();
