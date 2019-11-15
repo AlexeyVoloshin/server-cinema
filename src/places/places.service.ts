@@ -23,7 +23,7 @@ export class PlacesService {
     try {
       let result;
       result = await this.placeModel.find().exec();
-    if (result.length === 0) {
+      if (result.length === 0) {
       await this.createNewPlaces();
       result = await this.placeModel.find().exec();
     }

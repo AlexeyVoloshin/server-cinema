@@ -1,6 +1,10 @@
 import * as mongoose from 'mongoose';
 
 export const PlaceSchema = new mongoose.Schema({
+  _id: {
+    type: String,
+    require: false,
+  },
   row: {
     type: Number,
     require: true,
