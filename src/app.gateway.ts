@@ -42,12 +42,12 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   @SubscribeMessage('update')
   updateSelected(
     @MessageBody() data: Place,
-    @ConnectedSocket() client: Socket,
-    ): boolean {
+    @ConnectedSocket() client: Socket) {
     for (let val of this.places) {
       if (val['_doc']._id === data._id) {
         val['_doc'].select = data.select;
-        return client.broadcast.emit('events');
+        val['_doc'].bought = data.bought;
+        client.broadcast.emit('events');
       }
     }
   }
