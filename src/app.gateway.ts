@@ -1,22 +1,18 @@
 import {
+  ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway, WebSocketServer,
-  WsResponse,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
-import { from, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { PlaceInterface } from './interfaces/place.interface';
 import { PlacesService } from './places/places.service';
 import { Place } from './dto/place';
 
 @WebSocketGateway()
-// export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   constructor(private placesService: PlacesService ) {
   }
@@ -43,33 +39,21 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
-  // @SubscribeMessage('events')
-  // findAll(@MessageBody() data: any): Observable<WsResponse<number>> {
-  //   const event = 'events';
-  //   const response = [1, 2, 3];
-  //   return from(response).pipe(
-  //     map(data => ({ event, data })),
-  //   );
-  // }
-  // @SubscribeMessage('identity')
-  // async  identity(@MessageBody() data: number): Promise<number> {
-  //   return data;
-  // }
-
-  @SubscribeMessage('save')
-  sendSelected(@MessageBody() id: string) {
-    this.logger.log(`work`, id);
+  @SubscribeMessage('update')
+  updateSelected(
+    @MessageBody() data: Place,
+    @ConnectedSocket() client: Socket,
+    ): boolean {
     for (let val of this.places) {
-     if (val['_doc']._id === id) {
-       val['_doc'].select = true;
-       return ;
-     }
-   }
+      if (val['_doc']._id === data._id) {
+        val['_doc'].select = data.select;
+        return client.broadcast.emit('events');
+      }
+    }
   }
 
   @SubscribeMessage('get')
   async  getSelected(): Promise<Place[]> {
-    // this.selected;
      return  this.places;
   }
 }
