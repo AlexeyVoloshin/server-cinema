@@ -45,13 +45,27 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     @ConnectedSocket() client: Socket) {
     for (let val of this.places) {
       if (val['_doc']._id === data._id) {
-        val['_doc'].select = data.select;
-        val['_doc'].bought = data.bought;
-        client.broadcast.emit('events');
+         val['_doc'].select = data.select;
+         break;
       }
     }
+    client.broadcast.emit('events');
   }
-
+  @SubscribeMessage('bought')
+  boughtSelected(
+    @MessageBody() data: Place[],
+    @ConnectedSocket() client: Socket) {
+    for (let val of this.places) {
+      for (let res of data) {
+      if (val['_doc']._id === res._id) {
+        val['_doc'].bought = true;
+        break;
+      }
+      }
+    }
+    const res = null;
+    client.broadcast.emit('events');
+  }
   @SubscribeMessage('get')
   async  getSelected(): Promise<Place[]> {
      return  this.places;
